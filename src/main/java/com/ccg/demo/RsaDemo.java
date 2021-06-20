@@ -1,6 +1,7 @@
 package com.ccg.demo;
 
 import javax.crypto.Cipher;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
@@ -22,18 +23,18 @@ public class RsaDemo {
         // testRsa();
 
         // 测试加解密
-//        String ccgEncrypt = ccgEncrypt("欠妥右吉一一了中在也在一的地以要");
-//        System.out.println("密文: " + ccgEncrypt);
-//
-//        String ccgDecrypt = ccgDecrypt(ccgEncrypt);
-//        // String ccgDecrypt = ccgDecrypt("==");
-//        System.out.println("明文: " + ccgDecrypt);
+        String ccgEncrypt = ccgEncrypt("000000欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一1111111了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要欠妥右吉一一了中在也在一的地以要,1234567890");
+        System.out.println("密文: " + ccgEncrypt);
+
+        String ccgDecrypt = ccgDecrypt(ccgEncrypt);
+        // String ccgDecrypt = ccgDecrypt("==");
+        System.out.println("明文: " + ccgDecrypt);
 
         /**
          * generate key pairs
          */
-        Map<String, Key> map =  getKeyMap();
-        System.out.println("map = " + map);
+       // Map<String, Key> map =  getKeyMap();
+        //System.out.println("map = " + map);
     }
 
     final static String PRIVATE_KEY = "privateKey";
@@ -98,21 +99,54 @@ public class RsaDemo {
         return new String(bytes, "GBK");
     }
 
+    static int BLOCK_SIZE_128 = 128;
+
     public static byte[] decrypt(Key deKey, byte[] bytes) throws Exception {
         // debug
 //        System.out.println("decrypt: " + Arrays.toString(bytes));
         Cipher cipher2 = Cipher.getInstance(TYPE);
         cipher2.init(Cipher.DECRYPT_MODE, deKey);
-        return cipher2.doFinal(bytes);
+        //return cipher2.doFinal(bytes);
+        // ByteArrayOutputStream 不需要调用close
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        int size = bytes.length;
+        int offset = 0;
+        while(offset < size){
+            byte[] cache;
+            if(offset + BLOCK_SIZE_128 < size){
+                cache = cipher2.doFinal(bytes, offset, BLOCK_SIZE_128);
+            }else{
+                cache = cipher2.doFinal(bytes, offset, size - offset);
+            }
+            offset += BLOCK_SIZE_128;
+            bos.write(cache);
+        }
+        return bos.toByteArray();
     }
+
+    static int BLOCK_SIZE_117 = 117;
 
     public static byte[] encrypt(Key enKey, byte[] bytes) throws Exception {
         Cipher cipher = Cipher.getInstance(TYPE);
         cipher.init(Cipher.ENCRYPT_MODE, enKey);
-        byte[] result = cipher.doFinal(bytes);
+       // byte[] result = cipher.doFinal(bytes);
         // debug
         //System.out.println("encrypt: " + Arrays.toString(result));
-        return result;
+        //return result;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        int size = bytes.length;
+        int offset = 0;
+        while(offset < size){
+            byte[] cache;
+            if(offset + BLOCK_SIZE_117 < size){
+                cache = cipher.doFinal(bytes, offset, BLOCK_SIZE_117);
+            }else{
+                cache = cipher.doFinal(bytes, offset, size - offset);
+            }
+            offset += BLOCK_SIZE_117;
+            bos.write(cache);
+        }
+        return bos.toByteArray();
     }
 
     /**
