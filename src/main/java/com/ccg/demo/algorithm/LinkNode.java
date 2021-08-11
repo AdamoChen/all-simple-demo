@@ -187,6 +187,41 @@ public class LinkNode {
         }
     }
 
+    public ListNode[] splitListToParts(ListNode head, int k) {
+
+        ListNode cur = head;
+        int count = 0;
+        while(cur != null){
+            count++;
+            cur = cur.next;
+        }
+        cur = head;
+        ListNode[] arr = new ListNode[k];
+        int width = count / k;
+        int rem = count % k;
+        for (int i = 0; i < k; i++) {
+
+            for (int j = 0; j < width + (i < rem ? 1 : 0) - 1; j++) {
+                if (cur != null) {
+                    cur = cur.next;
+                }
+            }
+            arr[i] = head;
+            if (cur != null) {
+                head = cur.next;
+                cur.next = null;
+                cur = head;
+            }
+        }
+
+
+        for (ListNode aa : arr) {
+            print2(aa);
+            System.out.println();
+        }
+        return arr;
+    }
+
 
     public static void main(String[] args) {
         LinkNode a = new LinkNode();
@@ -197,7 +232,8 @@ public class LinkNode {
         // ListNode l = mergeTwoLists(l1, l2);
         // print2(l);
         // middleNode(l1);
-        print2(a.removeNthFromEnd(getListNode(new int[]{1,2, 3}), 3));
+        //print2(a.removeNthFromEnd(getListNode(new int[]{1,2, 3}), 3));
+        ListNode[] arr = a.splitListToParts(getListNode(new int[]{}), 3);
 
     }
 
